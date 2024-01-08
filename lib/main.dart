@@ -19,7 +19,9 @@ const String LOST_WORDS_KEY = 'lostWords';
 const String ALL_WORDS_LETTER_COUNTS_KEY = 'allWordsLetterCounts';
 const String LOST_WORDS_LETTER_COUNTS_KEY = 'lostWordsLetterCounts';
 
-const String PRONTHISTORY_TITLE = 'Pronthistory';
+const String PATOIS_TITLE = 'Patois';
+const String PATOIS_SUBTITLE =
+    'a: a dialect other than the standard or literary dialect';
 
 class AllWord {
   final String word;
@@ -54,7 +56,7 @@ class LostWord {
       word: json['word'],
       definition: json['definition'],
       description: json['description'],
-      partOfSpeech: json['part_of_speech'],
+      partOfSpeech: expandPartOfSpeech(json['part_of_speech']),
       years: json['years'],
     );
   }
@@ -82,8 +84,8 @@ class JsonData {
   }
 }
 
-Future<Map<String, dynamic>> loadJson() async {
-  String jsonString = await rootBundle.loadString('assets/pronthist.json');
+Future<Map<String, dynamic>> loadJson(String? jsonString) async {
+  jsonString ??= await rootBundle.loadString('assets/phronthistery.json');
   Map<String, dynamic> jsonData = jsonDecode(jsonString);
   JsonData data = JsonData.fromJson(jsonData);
 
@@ -136,7 +138,7 @@ class WordModeNotifier extends ValueNotifier<WordMode> {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  Map<String, dynamic> data = await loadJson();
+  Map<String, dynamic> data = await loadJson(null);
 
   runApp(DataProvider(
     data: data,
@@ -171,12 +173,12 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider<WordModeNotifier>(
       create: (context) => WordModeNotifier(),
       child: MaterialApp(
-        title: PRONTHISTORY_TITLE,
+        title: PATOIS_TITLE,
         theme: ThemeData(
           primarySwatch: Colors.red,
         ),
         home: const MyHomePage(
-          title: PRONTHISTORY_TITLE,
+          title: PATOIS_TITLE,
         ),
       ),
     );
@@ -245,113 +247,144 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.red,
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () =>
-                        launchURL(Uri.parse('https://www.phrontistery.info')),
-                    child: Text(
-                      'Pronthistery',
-                      style: GoogleFonts.gaegu(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white70,
+      return Stack(children: <Widget>[
+        // The background image
+        Image.asset(
+          'assets/images/parchment-background.png',
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            toolbarHeight: 90.0,
+            backgroundColor: Colors.red,
+            title: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () =>
+                          launchURL(Uri.parse('https://www.phrontistery.info')),
+                      child: Text(
+                        PATOIS_TITLE,
+                        style: GoogleFonts.comfortaa(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white70,
+                        ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {
-                      showSearch(
-                        context: context,
-                        delegate: WordSearchDelegate(),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        body: Center(
-            child: GestureDetector(
-          onTap: () => {
-            if (searchedForWord ?? false)
-              launchURL(
-                  Uri.parse('https://en.wiktionary.org/wiki/$selectedWord'))
-            else
-              pickRandomWord(currentWordMode)
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment
-                .start, // Aligns children along the horizontal axis
-            mainAxisAlignment: MainAxisAlignment
-                .start, // Aligns children along the vertical axis
-            children: <Widget>[
-              Padding(
-                padding:
-                    const EdgeInsets.all(20.0), // Adjust the value as needed
-                child: Text(
-                  selectedWord ?? '',
-                  style: GoogleFonts.comfortaa(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
+                    IconButton(
+                      icon: const Icon(Icons.search),
+                      onPressed: () {
+                        showSearch(
+                          context: context,
+                          delegate: WordSearchDelegate(),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.all(20.0), // Adjust the value as needed
-                child: buildWordDetailsWidget(
-                    context, currentWordMode, selectedWord ?? ''),
-              ),
-            ],
-          ),
-        )),
-        bottomNavigationBar: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: wordModeNotifier.value == WordMode.all
-                        ? Colors.blue
-                        : Colors.black,
-                  ),
-                  onPressed: () {
-                    wordModeNotifier.value = WordMode.all;
-                  },
-                  child: const Text('All'),
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: wordModeNotifier.value == WordMode.lost
-                        ? Colors.blue
-                        : Colors.black,
-                  ),
-                  child: const Text('Lost'),
-                  onPressed: () {
-                    wordModeNotifier.value = WordMode.lost;
-                  },
-                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(PATOIS_SUBTITLE,
+                          style: GoogleFonts.comfortaa(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white70,
+                          )),
+                    ),
+                  ],
+                )
               ],
             ),
-            // A-Z strip
-            const LetterCounts(),
-          ],
+          ),
+          body: Container(
+              color: const Color.fromARGB(96, 255, 255, 255),
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => {
+                    if (searchedForWord ?? false)
+                      launchURL(Uri.parse(
+                          'https://www.oed.com/search/dictionary/?scope=Entries&q=$selectedWord'))
+                    else
+                      pickRandomWord(currentWordMode)
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment
+                        .start, // Aligns children along the horizontal axis
+                    mainAxisAlignment: MainAxisAlignment
+                        .start, // Aligns children along the vertical axis
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(
+                            20.0), // Adjust the value as needed
+                        child: Text(
+                          selectedWord ?? '',
+                          style: GoogleFonts.comfortaa(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(
+                            20.0), // Adjust the value as needed
+                        child: buildWordDetailsWidget(
+                            context, currentWordMode, selectedWord ?? ''),
+                      ),
+                    ],
+                  ),
+                ),
+              )),
+          bottomNavigationBar: Container(
+            color: const Color.fromARGB(159, 244, 67, 54),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: wordModeNotifier.value == WordMode.all
+                            ? Colors.white70
+                            : Colors.black,
+                      ),
+                      onPressed: () {
+                        wordModeNotifier.value = WordMode.all;
+                      },
+                      child: const Text('All'),
+                    ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: wordModeNotifier.value == WordMode.lost
+                            ? Colors.white70
+                            : Colors.black,
+                      ),
+                      child: const Text('Lost'),
+                      onPressed: () {
+                        wordModeNotifier.value = WordMode.lost;
+                      },
+                    ),
+                  ],
+                ),
+                // A-Z strip
+                const LetterCounts(),
+              ],
+            ),
+          ),
         ),
-      );
+      ]);
     });
   }
 }
@@ -482,8 +515,8 @@ Widget buildWordDetailsWidget(
   } else if (currentWordMode == WordMode.lost) {
     var definition =
         DataProvider.of(context)!.data[LOST_WORDS_KEY][word].definition;
-    var partOfSpeech = expandPartOfSpeech(
-        DataProvider.of(context)!.data[LOST_WORDS_KEY][word].partOfSpeech);
+    var partOfSpeech =
+        DataProvider.of(context)!.data[LOST_WORDS_KEY][word].partOfSpeech;
     var yearsUsed = DataProvider.of(context)!.data[LOST_WORDS_KEY][word].years;
 
     double? leftColWidth = 180;
@@ -547,6 +580,10 @@ String expandPartOfSpeech(String abbreviation) {
       return 'noun';
     case 'adj':
       return 'adjective';
+    case 'adv':
+      return 'adverb';
+    case 'npl':
+      return 'noun plural';
     default:
       return abbreviation;
   }
@@ -565,8 +602,8 @@ Widget buildWordDetailsTile(
   } else if (currentWordMode == WordMode.lost) {
     var definition =
         DataProvider.of(context)!.data[LOST_WORDS_KEY][word].definition;
-    var partOfSpeech = expandPartOfSpeech(
-        DataProvider.of(context)!.data[LOST_WORDS_KEY][word].partOfSpeech);
+    var partOfSpeech =
+        DataProvider.of(context)!.data[LOST_WORDS_KEY][word].partOfSpeech;
     var yearsUsed = DataProvider.of(context)!.data[LOST_WORDS_KEY][word].years;
 
     return ListTile(
@@ -661,7 +698,7 @@ class WordSearchDelegate extends SearchDelegate<String> {
                     builder: (context) => MyHomePage(
                       selectedWord: word.word,
                       searchedForWord: true,
-                      title: PRONTHISTORY_TITLE,
+                      title: PATOIS_TITLE,
                     ),
                   ),
                 );
@@ -699,7 +736,7 @@ class WordSearchDelegate extends SearchDelegate<String> {
                       builder: (context) => MyHomePage(
                         selectedWord: word.word,
                         searchedForWord: true,
-                        title: PRONTHISTORY_TITLE,
+                        title: PATOIS_TITLE,
                       ),
                     ),
                   );

@@ -1,0 +1,38 @@
+name: Deploy to GitHub Pages
+
+on:
+    push:
+     branches:
+       - main
+    workflow_dispatch:
+
+jobs:
+ build:
+   runs-on: ubuntu-latest
+
+   steps:
+     - uses: actions/checkout@v3
+     - uses: subosito/flutter-action@v2
+       with:
+         channel: 'beta'
+         flutter-version: '3.18.0-0.2.pre'
+     - run: flutter clean
+     - run: flutter pub get
+     - run: flutter build web --release --base-href /patois-app/
+     - run: |
+         cd build
+         mkdir web-deploy
+         cd web-deploy
+         git config --global user.email "web-deploy-bot@manwe.io"
+         git config --global user.name "Web Deploy Bot"
+         git config --global init.defaultBranch main
+         git init
+         git remote add origin https://${{secrets.ACCESS_TOKEN}}@github.com/kai5263499/pronthist-app.git
+         git fetch origin gh-pages || echo "gh-pages does not exist, creating..."
+         git switch gh-pages || git checkout -b gh-pages
+         cp -R ../web/* .
+         git status
+         git add .
+         echo "Committing to gh-pages: ${{ github.event.head_commit.message }}"
+         git commit -m "${{ github.event.head_commit.message }}"
+         git push origin gh-pages

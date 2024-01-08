@@ -1,0 +1,58 @@
+name: Flutter CI
+
+on:
+ push:
+  branches:
+    - main
+ workflow_dispatch:
+
+jobs:
+ build:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'beta'
+        flutter-version: '3.18.0-0.2.pre'
+    - run: flutter pub get
+    - run: dart format --set-exit-if-changed .
+    - run: flutter analyze .
+    - run: flutter test
+    - run: flutter build apk
+    - name: Bump version
+      id: semver
+      uses: SOLIDSoftworks/semver-tags@v1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+        tag-prefix: 'v'
+        default-version: '0.0.1'
+        prerelease: 'alpha'
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.semver.outputs.semantic-version }}
+        release_name: Release ${{ steps.semver.outputs.semantic-version }}
+        draft: false
+        prerelease: false
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} 
+        asset_path: ./build/app/outputs/apk/release/app-release.apk
+        asset_name: app-release.apk
+        asset_content_type: application/vnd.android.package-archive
+    - name: Delete old releases
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+          gh release delete $(gh release list --limit=6 | tail -n +6) || true

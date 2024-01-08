@@ -1,6 +1,6 @@
-# pronthist
+# patois
 
-A new Flutter project.
+An guide to strange and obscure English words
 
 ## Getting Started
 
