@@ -25,6 +25,8 @@ jobs:
     - run: flutter build apk
     - name: create semantic release tag
       uses: K-Phoen/semver-release-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         release_branch: main
     - name: Push tag back to repository
