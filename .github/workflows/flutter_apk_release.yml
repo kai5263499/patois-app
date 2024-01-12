@@ -31,11 +31,6 @@ jobs:
         tag-prefix: 'v'
         default-version: '0.0.1'
         prerelease: 'alpha'
-    - name: Push tag back to repository
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        git push origin ${{ steps.semver.outputs.semantic-version }}
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
