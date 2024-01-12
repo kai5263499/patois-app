@@ -44,6 +44,7 @@ void main() {
     expect(data['lostWords'].length, 1);
     expect(data['allWords'].length, 1);
     expect(data['lostWords']['acrasial'].word, 'acrasial');
+    expect(data['lostWords']['acrasial'].partOfSpeech, 'adjective');
     expect(data['allWords']['aardwolf'].word, 'aardwolf');
     expect(data['lostWordsLetterCounts']['A'], 1);
     expect(data['allWordsLetterCounts']['A'], 1);
@@ -58,8 +59,6 @@ void main() {
         ),
       ),
     );
-
-    await tester.pumpAndSettle();
 
     // Verify that LetterCounts is present.
     expect(find.byType(LetterCounts), findsOneWidget);

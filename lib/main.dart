@@ -56,7 +56,7 @@ class LostWord {
       word: json['word'],
       definition: json['definition'],
       description: json['description'],
-      partOfSpeech: json['part_of_speech'],
+      partOfSpeech: expandPartOfSpeech(json['part_of_speech']),
       years: json['years'],
     );
   }
@@ -515,8 +515,8 @@ Widget buildWordDetailsWidget(
   } else if (currentWordMode == WordMode.lost) {
     var definition =
         DataProvider.of(context)!.data[LOST_WORDS_KEY][word].definition;
-    var partOfSpeech = expandPartOfSpeech(
-        DataProvider.of(context)!.data[LOST_WORDS_KEY][word].partOfSpeech);
+    var partOfSpeech =
+        DataProvider.of(context)!.data[LOST_WORDS_KEY][word].partOfSpeech;
     var yearsUsed = DataProvider.of(context)!.data[LOST_WORDS_KEY][word].years;
 
     double? leftColWidth = 180;
@@ -580,6 +580,10 @@ String expandPartOfSpeech(String abbreviation) {
       return 'noun';
     case 'adj':
       return 'adjective';
+    case 'adv':
+      return 'adverb';
+    case 'npl':
+      return 'noun plural';
     default:
       return abbreviation;
   }
@@ -598,8 +602,8 @@ Widget buildWordDetailsTile(
   } else if (currentWordMode == WordMode.lost) {
     var definition =
         DataProvider.of(context)!.data[LOST_WORDS_KEY][word].definition;
-    var partOfSpeech = expandPartOfSpeech(
-        DataProvider.of(context)!.data[LOST_WORDS_KEY][word].partOfSpeech);
+    var partOfSpeech =
+        DataProvider.of(context)!.data[LOST_WORDS_KEY][word].partOfSpeech;
     var yearsUsed = DataProvider.of(context)!.data[LOST_WORDS_KEY][word].years;
 
     return ListTile(
