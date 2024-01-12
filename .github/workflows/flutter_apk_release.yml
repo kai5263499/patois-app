@@ -23,26 +23,27 @@ jobs:
     - run: flutter analyze .
     - run: flutter test
     - run: flutter build apk
-    - name: create semantic release tag
-      uses: K-Phoen/semver-release-action@master
+    - name: Bump version
       id: semver
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: SOLIDSoftworks/semver-tags@v1
       with:
-        release_branch: main
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+        tag-prefix: 'v'
+        default-version: '0.0.1'
+        prerelease: 'alpha'
     - name: Push tag back to repository
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        git push origin ${{ steps.semver.outputs.tag }}
+        git push origin ${{ steps.semver.outputs.semantic-version }}
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.semver.outputs.tag }}
-        release_name: Release ${{ steps.semver.outputs.tag }}
+        tag_name: ${{ steps.semver.outputs.semantic-version }}
+        release_name: Release ${{ steps.semver.outputs.semantic-version }}
         draft: false
         prerelease: false
     - name: Upload Release Asset
