@@ -24074,13 +24074,13 @@ r=J.m6(q,new A.a_n(),t.Q3)
 s=A.a2(r,!0,A.j(r).j("b6.E"))
 r=J.m6(p,new A.a_o(),t.Ip)
 return new A.a_m(s,A.a2(r,!0,A.j(r).j("b6.E")))},
-ahf(){var s=0,r=A.Q(t.a),q,p,o,n,m,l,k,j,i,h,g,f,e
-var $async$ahf=A.R(function(a,b){if(a===1)return A.N(b,r)
+ahf(a){var s=0,r=A.Q(t.a),q,p,o,n,m,l,k,j,i,h,g,f,e
+var $async$ahf=A.R(function(b,c){if(b===1)return A.N(c,r)
 while(true)switch(s){case 0:f=A
 e=B.c8
 s=3
-return A.T($.m4().afG("assets/phronthistery.json"),$async$ahf)
-case 3:l=f.ax4(e.OV(b,null))
+return A.T(a.afG("assets/phronthistery.json"),$async$ahf)
+case 3:l=f.ax4(e.OV(c,null))
 k=t.N
 j=B.b.rn(l.a,A.B(k,t.Q3),new A.ahg())
 i=B.b.rn(l.b,A.B(k,t.Ip),new A.ahh())
@@ -24103,7 +24103,7 @@ var $async$ahk=A.R(function(a,b){if(a===1)return A.N(b,r)
 while(true)switch(s){case 0:if($.ac==null)A.ap5()
 $.ac.toString
 s=2
-return A.T(A.ahf(),$async$ahk)
+return A.T(A.ahf($.m4()),$async$ahk)
 case 2:q=b
 if($.ac==null)A.ap5()
 p=$.ac
