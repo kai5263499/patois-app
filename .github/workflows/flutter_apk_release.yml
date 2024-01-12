@@ -37,6 +37,8 @@ jobs:
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ steps.latesttag.outputs.tag }}
         release_name: Release ${{ steps.latesttag.outputs.tag }}
@@ -45,11 +47,15 @@ jobs:
     - name: Upload Release Asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} 
         asset_path: ./build/app/outputs/apk/release/app-release.apk
         asset_name: app-release.apk
         asset_content_type: application/vnd.android.package-archive
     - name: Delete old releases
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release delete $(gh release list --limit=6 | tail -n +6)
+          gh release delete $(gh release list --limit=6 | tail -n +6)
