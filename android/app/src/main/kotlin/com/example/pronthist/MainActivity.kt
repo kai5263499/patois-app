@@ -1,4 +1,4 @@
-package com.example.pronthist
+package io.manwe.patois
 
 import io.flutter.embedding.android.FlutterActivity
 
