@@ -27,7 +27,7 @@ jobs:
          git config --global user.name "Web Deploy Bot"
          git config --global init.defaultBranch main
          git init
-         git remote add origin https://${{secrets.ACCESS_TOKEN}}@github.com/kai5263499/pronthist-app.git
+         git remote add origin https://${{secrets.ACCESS_TOKEN}}@github.com/kai5263499/patois-app.git
          git fetch origin gh-pages || echo "gh-pages does not exist, creating..."
          git switch gh-pages || git checkout -b gh-pages
          cp -R ../web/* .
